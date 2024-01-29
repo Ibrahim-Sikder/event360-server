@@ -46,7 +46,12 @@ async function run() {
       const result = await eventCollection.insertOne(service)
       res.send(result)
     })
-
+    app.delete("/services/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const result = await eventCollection.deleteOne(filter)
+      res.send(result)
+    })
 
     app.put("/services/:id", async (req, res) => {
       const id = req.params.id
