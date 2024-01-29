@@ -63,12 +63,7 @@ async function run() {
       const updatedService = {
         $set: {
           name: newService.name,
-          title: newService.title,
-          subtitle: newService.subtitle,
-          topservicetitle: newService.topservicetitle,
-          topserviceDescription: newService.topserviceDescription,
-          whatWedoDescription: newService.whatWedoDescription,
-          productsDescription: newService.productsDescription,
+          serviceItem: newService.serviceItem,
           image: newService.image,
           description: newService.description,
         },
@@ -109,29 +104,23 @@ async function run() {
     app.put("/events/:id", async (req, res) => {
       const id = req.params.id
       const filter = { _id: new ObjectId(id) }
-      const newService = req.body
-      console.log(newService)
+      const newEvent = req.body
       const options = { upsert: true }
       const updatedService = {
         $set: {
-          name: newService.name,
-          title: newService.title,
-          subtitle: newService.subtitle,
-          topservicetitle: newService.topservicetitle,
-          topserviceDescription: newService.topserviceDescription,
-          whatWedoDescription: newService.whatWedoDescription,
-          productsDescription: newService.productsDescription,
-          image: newService.image,
-          description: newService.description,
+          name: newEvent.name,
+          image: newEvent.image,
+          eventItem: newEvent.eventItem,
+          description: newEvent.description,
         },
       }
 
-      const services = await eventCollection.updateOne(
+      const events = await eventCollection.updateOne(
         filter,
         updatedService,
         options
       )
-      res.send(services)
+      res.send(events)
     })
 
     await client.db("admin").command({ ping: 1 })
