@@ -29,6 +29,9 @@ async function run() {
     await client.connect()
     const eventCollection = client.db("Event360").collection("events")
     const serviceCollection = client.db("Event360").collection("services")
+    const recentEventCollection = client
+      .db("Event360")
+      .collection("recent-events")
 
     // services related api
     app.get("/services", async (req, res) => {
@@ -111,6 +114,53 @@ async function run() {
           name: newEvent.name,
           image: newEvent.image,
           eventItem: newEvent.eventItem,
+          description: newEvent.description,
+        },
+      }
+
+      const events = await eventCollection.updateOne(
+        filter,
+        updatedService,
+        options
+      )
+      res.send(events)
+    })
+
+    // recent event api
+    app.get("/recent-events", async (req, res) => {
+      const service = await recentEventCollection.find().toArray()
+      res.send(service)
+    })
+
+    app.get("/recent-events/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const result = await recentEventCollection.findOne(filter)
+      res.send(result)
+    })
+    app.post("/recent-events", async (req, res) => {
+      const event = req.body
+      console.log(event)
+      const result = await recentEventCollection.insertOne(event)
+      res.send(result)
+    })
+    app.delete("/recent-events/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const result = await recentEventCollection.deleteOne(filter)
+      res.send(result)
+    })
+
+    app.put("/recent-events/:id", async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) }
+      const newEvent = req.body
+      const options = { upsert: true }
+      const updatedService = {
+        $set: {
+          name: newEvent.name,
+          image: newEvent.image,
+          eventItem: newEvent.recentEventName,
           description: newEvent.description,
         },
       }
